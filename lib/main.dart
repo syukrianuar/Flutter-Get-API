@@ -19,6 +19,18 @@ class MyApp extends StatelessWidget {
   }
 }
 
+class User{
+  final String name; 
+  final String email;
+  final String username;
+
+  User({
+    required this.name, 
+    required this.email, 
+    required this.username,
+  });
+}
+
 class DataFromAPI extends StatefulWidget {
   const DataFromAPI({ Key? key }) : super(key: key);
   
@@ -27,16 +39,19 @@ class DataFromAPI extends StatefulWidget {
 }
 
 class _DataFromAPIState extends State<DataFromAPI> {
-  getUserData() async{
-    var response = await http.get(Uri.https('jsonplaceholder.typicode.com', 'users'));
-    var jsonData = jsonDecode(response.body);
+  Future<List<User>> getUserData() async{
+    String url = "https://jsonplaceholder.typicode.com/users";
+    final response = await http.get(Uri.parse(url));
+    var jsonData = json.decode(response.body);
     List<User> users = [];
 
     for(var u in jsonData){
-      User user = User(u["name"], u["email"], u["username"]);
+      User user = User(
+        name: u["name"], 
+        email: u["email"], 
+        username: u["username"]);
       users.add(user);
     }
-    print(users.length);
     return users;
   }
   @override
@@ -48,33 +63,28 @@ class _DataFromAPIState extends State<DataFromAPI> {
       body: Container(
         child: Card(child: FutureBuilder(
           future: getUserData(),
-          builder: (context, snapshot){
+          builder: (BuildContext context, AsyncSnapshot snapshot){
             if(snapshot.data == null){
               return Container(
                 child: const Center(
                   child: Text('Loading...'),
                 ),
               );
-            }else 
-            return ListView.builder(
-              // itemCount: snapshot.data.length,
-              itemBuilder: (context, i){
-                return ListTile(
-                  // title: Text(snapshot.data[i].name),
-                  // subtitle: Text(snapshot.data[i].userame),
-                  // trailing: Text(snapshot.data[i].email),
+            }else{
+              return ListView.builder(
+                itemCount: snapshot.data.length,
+                itemBuilder: (context, i)=>ListTile(
+                    title: Text(snapshot.data[i].name),
+                    subtitle: Text(snapshot.data[i].username),
+                    trailing: Text(snapshot.data[i].email),
+                  ),
                 );
-              });
+              }
             },
           ),
         ),
       ),
     );
   }
-}
-
-class User{
-  final String name, email, userName;
-  User(this.name, this.email, this.userName);
 }
 
