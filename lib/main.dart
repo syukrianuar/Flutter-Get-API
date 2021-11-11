@@ -67,7 +67,7 @@ class _DataFromAPIState extends State<DataFromAPI> {
             if(snapshot.data == null){
               return Container(
                 child: const Center(
-                  child: Text('Loading...'),
+                  child: Text('Loading...'), Text('Loading...'),
                 ),
               );
             }else{
